@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assignment 2</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Create class Sale with properties => name, amount
+      class Sale {
+        constructor(name, amount) {
+          this.name = name;
+          this.amount = amount;
+        }
+      }
+
+      // Create class Purchase with properties => name, amount
+
+      class Purchase {
+        constructor(name, amount) {
+          this.name = name;
+          this.amount = amount;
+        }
+      }
+
+      // Create a Class Company with properties => name, sales(array of Sale), purchases(array of Purchase)
+
+      class Company {
+        // sales & purchases will be private members
+        #sales;
+        #purchases;
+
+        constructor(name, sales = [], purchases = []) {
+          this.name = name;
+          this.#sales = sales;
+          this.#purchases = purchases;
+        }
+
+        get sales() {
+          return this.#sales;
+        }
+
+        set sales(sale) {
+          this.#sales.push(sale);
+        }
+
+        get purchases() {
+          return this.#purchases;
+        }
+
+        set purchases(purchase) {
+          this.#purchases.push(purchase);
+        }
+
+        // Add a function addSale => will create new objects of Sale and push it to the sales arrays
+        addSale(name, amount) {
+          const newSale = new Sale(name, amount);
+          this.#sales.push(newSale.amount);
+          console.log(`${newSale.name} - ${newSale.amount}`);
+          //   sales = newSale.amount;
+        }
+
+        // Add a function addPurchase => will create new objects of Purchase and push it to the purchaese arrays
+
+        addPurchase(name, amount) {
+          const newPurchase = new Purchase(name, amount);
+          this.#purchases.push(newPurchase.amount);
+          console.log(`${newPurchase.name} - ${newPurchase.amount}`);
+          //   purchases = newPurchase.amount;
+        }
+
+        /**
+         * Add a function getProfitLossReport
+         * 1. Calculate Profit using sales
+         * 2. Calculate spends using purchases
+         * 3. Calculate difference between profit and spends
+         * 4. return an object in following format
+         * {
+         * income: sum of sales,
+         * expense: sum of purchases,
+         * profit: income - expense, (if income > expense)
+         * loss: expense - income, (if income < expense)
+         * }
+         *
+         */
+
+        getProfitLossReport() {
+          let income = this.#sales.reduce(
+            (totalIncome, next) => (totalIncome += next)
+          );
+          let expense = this.#purchases.reduce(
+            (totalExpense, next) => (totalExpense += next)
+          );
+          let profit, loss;
+          if (income > expense) {
+            profit = income - expense;
+          } else {
+            loss = expense - income;
+          }
+
+          return {
+            income: income,
+            expense: expense,
+            profit: profit,
+            loss: loss,
+          };
+        }
+      }
+
+      // Create a Class MNC by inheriting Company with extra properties => taxRate, country
+
+      class MNC extends Company {
+        constructor(name, sales = [], purchases = [], taxRate, country) {
+          super(name, (sales = []), (purchases = []));
+          this.taxRate = taxRate;
+          this.country = country;
+        }
+
+        calculateTax() {
+          const obj = super.getProfitLossReport();
+          console.log(obj);
+          let taxAmount, tax;
+          const { income, expense, profit, loss } = obj;
+          if (profit > 5_00_000) {
+            taxAmount = profit - 5_00_000;
+          } else {
+            console.log("Tax not applicable");
+          }
+          tax = (taxAmount * this.taxRate) / 100;
+          return tax;
+        }
+      }
+
+      // Add a function calculateTax
+      // If profit is more than 5,00,000 tax will be applied to amount (profit - 500000)
+      // ex. if profit = 600000 & taxRate = 10
+      // taxable amount will be 600000 - 500000 = 100000
+      // tax = 100000 * 10/100 = 10000
+
+      // Create an object of MNC and calculate tax with differnet input combination
+      // add Sales & purchases to make it realtime
+
+      //   const dabur = new Company("Dabur", [], []);
+      const dabur = new MNC("Dabur", [], [], 10, "India");
+      console.log(
+        `Company Name - ${dabur.name}      Country - ${dabur.country}`
+      );
+      console.log("**********Purchases***********");
+      dabur.addPurchase("Dabur Toothpaste", 80);
+      dabur.addPurchase("Honey", 140);
+      dabur.addPurchase("Shampoo", 260);
+      dabur.purchases;
+
+      console.log("");
+      console.log("");
+      console.log("");
+      console.log("");
+      console.log("***************Sales**************");
+      dabur.addSale("Dabur Toothpaste", 99);
+      dabur.addSale("Shampoo", 550000);
+      dabur.addSale("Honey", 150);
+      dabur.sales;
+      console.log("");
+      console.log("");
+      console.log("");
+
+      console.log("******************Profit/Loss Report**************");
+      console.log(dabur.getProfitLossReport());
+
+      console.log("");
+      console.log("");
+      console.log("");
+      console.log("***************Tax***********************");
+      console.log(dabur.calculateTax());
+      console.log(`Tax = ${dabur.calculateTax()}`);
+    </script>
+  </body>
+</html>
